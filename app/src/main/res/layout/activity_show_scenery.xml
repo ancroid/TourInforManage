@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/include_toolbar" />
+
+        <TextView
+            android:id="@+id/text_scene_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="北京"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/text_location_show"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:drawablePadding="2dp"
+            android:drawableTop="@drawable/ic_location_show"
+            android:gravity="center"
+            android:textSize="14sp" />
+
+
+        <TextView
+            android:id="@+id/text_scene_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:ellipsize="end"
+            android:padding="10dp"
+            android:textColor="@color/colorBlack"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="@color/light_black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="图片展示:" />
+
+        <com.goyourfly.multi_picture.MultiPictureView
+            android:id="@+id/multiple_scenery"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="8dp"
+            app:editable="false"
+            app:imageLayoutMode="DYNAMIC"
+            app:max="6"
+            app:space="8dp"
+            app:span="1"
+            app:ratio="1"
+            android:layout_marginBottom="10dp">
+        </com.goyourfly.multi_picture.MultiPictureView>
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

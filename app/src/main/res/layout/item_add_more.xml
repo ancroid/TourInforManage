@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageButton
+        android:id="@+id/add_foot"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/ic_add_more"
+        android:layout_marginBottom="20dp"/>
+    <ImageButton
+        android:id="@+id/image_btu_delete"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/ic_delete"
+        android:layout_marginEnd="15dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="5dp"
+        android:text="添加节点信息" />
+
+</RelativeLayout>
