@@ -82,7 +82,7 @@ class WayInfoFragment : Fragment() {
                         .setTitle("Reminding")
                         .setMessage("Are you sure to delete?")
                         .setPositiveButton("Yes", { idialog, which ->
-
+                            deleteWay(dataList[position].id!!)
                         })
                         .setNegativeButton("No", { idialog, which ->
                             Toast.makeText(activity, "已取消", Toast.LENGTH_SHORT).show()
@@ -97,6 +97,11 @@ class WayInfoFragment : Fragment() {
     private fun queryWayInfo() {
         dataList = db.getonlyWayInfo()
         initRecycler()
+    }
+    private fun deleteWay(id:Int){
+        db.deleteWayInfo(id,db.isHavePoint(id))
+        dataList=db.getonlyWayInfo()
+        setData()
     }
 
     private fun setData() {

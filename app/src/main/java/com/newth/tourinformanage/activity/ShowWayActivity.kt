@@ -40,16 +40,18 @@ class ShowWayActivity : AppCompatActivity() {
         setContentView(R.layout.activity_show_way)
         initView()
     }
-    private fun initView(){
+
+    private fun initView() {
         toolbar = findViewById(R.id.tool_bar)
         text_tool_title = findViewById(R.id.toolbar_title)
-        reclerview =findViewById(R.id.recycler_wayinfo)
+        reclerview = findViewById(R.id.recycler_wayinfo)
         initMultiputure()
         initToolBar()
         val intent = intent
         id = intent.getIntExtra("id", 0)
         queryWayInfo()
     }
+
     private fun initToolBar() {
         setSupportActionBar(toolbar)
         var actionbar = supportActionBar
@@ -59,18 +61,20 @@ class ShowWayActivity : AppCompatActivity() {
         }
         text_tool_title.text = "旅游线路详细信息"
     }
-    private fun queryWayInfo(){
+
+    private fun queryWayInfo() {
         dataList = db.getWayAndPointByID(id)
         if (dataList.isNotEmpty()) {
             initRecycler()
         }
     }
-    private fun initRecycler(){
-        val list=ArrayList<WayMutipleItem>()
-        val item=WayMutipleItem(1,dataList[0])
+
+    private fun initRecycler() {
+        val list = ArrayList<WayMutipleItem>()
+        val item = WayMutipleItem(1, dataList[0])
         list.add(item)
-        for (i in dataList[0].wayPointList!!.indices){
-            val item=WayMutipleItem(2, dataList[0].wayPointList!![i])
+        for (i in dataList[0].wayPointList!!.indices) {
+            val item = WayMutipleItem(2, dataList[0].wayPointList!![i])
             list.add(item)
         }
         myAdapter = ShowWayAdapter(list)
@@ -78,6 +82,7 @@ class ShowWayActivity : AppCompatActivity() {
         reclerview.layoutManager = linerManager
         reclerview.adapter = myAdapter
     }
+
     private fun initMultiputure() {
         MultiPictureView.setImageLoader(object : ImageLoader {
             override fun loadImage(image: ImageView, uri: Uri) {
@@ -96,6 +101,7 @@ class ShowWayActivity : AppCompatActivity() {
         menu!!.findItem(R.id.edit_scene_info).title = "编辑"
         return super.onCreateOptionsMenu(menu)
     }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.itemId) {
             android.R.id.home -> finish()
@@ -118,6 +124,7 @@ class ShowWayActivity : AppCompatActivity() {
                         id = data.getIntExtra("id", 0)
                         queryWayInfo()
                     }
+
                 }
             }
         }

@@ -50,9 +50,7 @@ class TourWayAdapter(data: List<Int>?, private var activity: Activity) : BaseQui
         }
         segment.setOnSegmentControlClickListener { index -> kindtag = kindsArray[index] }
 
-
-        val ac=activity as AddTourWayActivity
-        ac.showInfo()
+        (activity as AddTourWayActivity).showInfo()
     }
 
     private fun initClicklistener() {

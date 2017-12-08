@@ -55,7 +55,7 @@ class AddTourWayActivity : AppCompatActivity() {
         if (tag == 2) {
             //修改景点信息
             queryDB(id)
-        }else{
+        } else {
             initRecycler()
         }
     }
@@ -93,7 +93,14 @@ class AddTourWayActivity : AppCompatActivity() {
             R.id.edit_scene_info -> {
                 if (myAdapter.collecInfo()) {
                     val wayinfo = myAdapter.getWayInfo()
-                    db.saveWayInfo(wayinfo)
+                    if (tag==2){
+                        db.editWayInfo(id,wayinfo)
+                        val intent = Intent()
+                        intent.putExtra("id", id)
+                        setResult(Activity.RESULT_OK, intent)
+                    }else{
+                        db.saveWayInfo(wayinfo)
+                    }
                     Log.d("addt", wayinfo.wayName + "  " + wayinfo.wayPointList!!.size)
                     finish()
                 }
@@ -135,8 +142,9 @@ class AddTourWayActivity : AppCompatActivity() {
             initRecycler()
         }
     }
+
     fun showInfo() {
-        if (tag==2){
+        if (tag == 2) {
             val wayInfo = dataList[0]
             myAdapter.setInfoByEdit(wayInfo)
         }

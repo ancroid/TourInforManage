@@ -16,6 +16,7 @@ class WayInfoDB private constructor() {
         val wayinfoDBhelper = WayInfoDBHelper(MyApplication.getAppContext(), dbName, null, version)
         db = wayinfoDBhelper.writableDatabase
     }
+
     companion object {
         val dbName: String = "WayInfo"
         val version: Int = 1
@@ -33,14 +34,15 @@ class WayInfoDB private constructor() {
             contentValues.put("wayLocation", wayInfo.wayLocation)
             contentValues.put("wayKind", wayInfo.wayKind)
             contentValues.put("wayContent", wayInfo.wayContent)
-            val insertid=db.insert("WayInfo", null, contentValues)
+            val insertid = db.insert("WayInfo", null, contentValues)
             savePointInfo(insertid, wayInfo.wayPointList!!)
         }
     }
-    private fun savePointInfo(id:Long,list:ArrayList<WayInfo.Point>){
-        for (i in list.indices){
+
+    private fun savePointInfo(id: Long, list: ArrayList<WayInfo.Point>) {
+        for (i in list.indices) {
             val contentValues = ContentValues()
-            val point=list[i]
+            val point = list[i]
             contentValues.put("wayTag", id)
             contentValues.put("pointName", point.pointName)
             contentValues.put("pointContent", point.pointContent)
@@ -67,7 +69,7 @@ class WayInfoDB private constructor() {
         return list
     }
 
-    fun getWayAndPointByID(id:Int): ArrayList<WayInfo> {
+    fun getWayAndPointByID(id: Int): ArrayList<WayInfo> {
         val list = ArrayList<WayInfo>()
         val cursor = db.query("WayInfo", null, "id=?", arrayOf(id.toString()), null, null, "id desc")
         if (cursor!!.moveToFirst()) {
@@ -78,15 +80,29 @@ class WayInfoDB private constructor() {
                 way.wayLocation = cursor.getString(cursor.getColumnIndex("wayLocation"))
                 way.wayKind = cursor.getString(cursor.getColumnIndex("wayKind"))
                 way.wayContent = cursor.getString(cursor.getColumnIndex("wayContent"))
-                way.wayPointList=getPointByTag(way.id!!)
+                way.wayPointList = getPointByTag(way.id!!)
                 list.add(way)
             } while (cursor.moveToNext())
         }
         cursor.close()
         return list
     }
-    private fun getPointByTag(tag: Int):ArrayList<WayInfo.Point>{
-        val list=ArrayList<WayInfo.Point>()
+
+    fun isHavePoint(tag: Int): Boolean {
+        val cursor = db.query("PointInfo", null, "wayTag=?", arrayOf(tag.toString()), null, null, "id desc")
+        if (cursor!!.moveToFirst()) {
+            do {
+                if ((cursor.getString(cursor.getColumnIndex("pointName"))).isNotEmpty()) {
+                    return true
+                }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return false
+    }
+
+    private fun getPointByTag(tag: Int): ArrayList<WayInfo.Point> {
+        val list = ArrayList<WayInfo.Point>()
         val cursor = db.query("PointInfo", null, "wayTag=?", arrayOf(tag.toString()), null, null, "id desc")
         if (cursor!!.moveToFirst()) {
             do {
@@ -100,5 +116,29 @@ class WayInfoDB private constructor() {
         }
         cursor.close()
         return list
+    }
+
+    fun deleteWayInfo(id: Int, tag: Boolean) {
+        db.delete("WayInfo", "id=?", arrayOf(id.toString()))
+        if (tag) {
+            deletePointByTag(id)
+        }
+    }
+
+    private fun deletePointByTag(tag: Int) {
+        db.delete("PointInfo", "wayTag=?", arrayOf(tag.toString()))
+    }
+
+    fun editWayInfo(id: Int, wayInfo: WayInfo?) {
+        if (wayInfo != null) {
+            val contentValues = ContentValues()
+            contentValues.put("wayName", wayInfo.wayName)
+            contentValues.put("wayLocation", wayInfo.wayLocation)
+            contentValues.put("wayKind", wayInfo.wayKind)
+            contentValues.put("wayContent", wayInfo.wayContent)
+            db.update("WayInfo", contentValues, "id=?", arrayOf(id.toString()))
+            deletePointByTag(id)
+            savePointInfo(id.toLong(), wayInfo.wayPointList!!)
+        }
     }
 }
