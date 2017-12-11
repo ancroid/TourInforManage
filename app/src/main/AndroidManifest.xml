@@ -25,6 +25,8 @@
         <activity android:name=".util.PickLocationActivity"/>
         <activity android:name=".activity.ShowSceneActivity"/>
         <activity android:name=".activity.ShowWayActivity"/>
+        <activity android:name=".activity.AddTourGuideActivity"/>
+        <activity android:name=".activity.ShowGuideActivity"/>
     </application>
 
 </manifest>

@@ -43,7 +43,7 @@ class SceneInfoDB private constructor() {
 
     fun getSceneInfo(): ArrayList<SceneInfo> {
         val list = ArrayList<SceneInfo>()
-        val cursor = db.query("SceneInfo", null, null, null, null, null, null)
+        val cursor = db.query("SceneInfo", null, null, null, null, null, "id desc")
         if (cursor!!.moveToFirst()) {
             do {
                 val scene = SceneInfo()

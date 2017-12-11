@@ -14,41 +14,42 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.newth.tourinformanage.R
-import com.newth.tourinformanage.activity.ShowSceneActivity
-import com.newth.tourinformanage.adapter.SceneInfoAdapter
-import com.newth.tourinformanage.bean.SceneInfo
-import com.newth.tourinformanage.dbHelper.SceneInfoDB
-
+import com.newth.tourinformanage.activity.ShowGuideActivity
+import com.newth.tourinformanage.adapter.TourGuideAdapter
+import com.newth.tourinformanage.bean.GuideInfo
+import com.newth.tourinformanage.dbHelper.TourGuideDB
 
 /**
- * Created by Mr.chen on 2017/11/17.
+ * Created by Mr.chen on 2017/12/10.
  */
-class ScenInfoFragment : Fragment() {
+
+class TourGuideFragment : Fragment() {
 
     private lateinit var toolbar: Toolbar
     private lateinit var reclerview: RecyclerView
     private lateinit var swipeRefesh: SwipeRefreshLayout
-    private var db: SceneInfoDB = SceneInfoDB.get()
-    private var dataList = ArrayList<SceneInfo>()
-    private lateinit var myAdapter: SceneInfoAdapter
+
+    private var db: TourGuideDB = TourGuideDB.get()
+    private var dataList = ArrayList<GuideInfo>()
+    private lateinit var myAdapter: TourGuideAdapter
 
     companion object {
-        fun newInstance(): ScenInfoFragment = ScenInfoFragment()
+        fun newInstance(): TourGuideFragment = TourGuideFragment()
     }
-
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_scenery_info, container, false)
+        val view = inflater!!.inflate(R.layout.fragment_guide_info, container, false)
         toolbar = view.findViewById(R.id.tool_bar)
-        reclerview = view.findViewById(R.id.recycler_sceneinfo)
-        swipeRefesh = view.findViewById(R.id.swipe_scene_info)
+        reclerview = view.findViewById(R.id.recycler_guide_info)
+        swipeRefesh = view.findViewById(R.id.swipe_guide_info)
         return view
     }
+
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initview()
-        querySceneInfo()
+        queryGuideInfo()
     }
 
     private fun initview() {
@@ -56,11 +57,11 @@ class ScenInfoFragment : Fragment() {
         activity.setSupportActionBar(toolbar)
         val actionbar = activity.supportActionBar
         if (actionbar != null) {
-            actionbar.title = "景点信息管理"
+            actionbar.title = "导游信息管理"
             actionbar.setDisplayHomeAsUpEnabled(false)
         }
         swipeRefesh.setOnRefreshListener {
-            querySceneInfo()
+            queryGuideInfo()
         }
     }
 
@@ -69,12 +70,12 @@ class ScenInfoFragment : Fragment() {
             swipeRefesh.isRefreshing = false
         }
         if (dataList.size > 0) {
-            myAdapter = SceneInfoAdapter(dataList)
+            myAdapter = TourGuideAdapter(dataList)
             val linerManager = LinearLayoutManager(activity)
             reclerview.layoutManager = linerManager
             reclerview.adapter = myAdapter
             myAdapter.setOnItemClickListener { adapter, view, position ->
-                val intent = Intent(activity, ShowSceneActivity::class.java)
+                val intent = Intent(activity, ShowGuideActivity::class.java)
                 intent.putExtra("id", dataList[position].id)
                 activity.startActivity(intent)
             }
@@ -83,7 +84,7 @@ class ScenInfoFragment : Fragment() {
                         .setTitle("Reminding")
                         .setMessage("Are you sure to delete?")
                         .setPositiveButton("Yes", { idialog, which ->
-                            deleteSceneByID(dataList[position].id!!)
+                            deleteGuideByID(dataList[position].id!!)
                         })
                         .setNegativeButton("No", { idialog, which ->
                             Toast.makeText(activity, "已取消", Toast.LENGTH_SHORT).show()
@@ -96,19 +97,13 @@ class ScenInfoFragment : Fragment() {
         }
     }
 
-    private fun querySceneInfo() {
-        dataList = db.getSceneInfo()
+    private fun queryGuideInfo() {
+        dataList = db.getGuideList()
         initRecycler()
     }
-
-    private fun deleteSceneByID(id: Int) {
-        if (db.deleteSceneByID(id)) {
-            dataList = db.getSceneInfo()
-            setData()
-        }
-    }
-
-    private fun setData() {
+    private fun deleteGuideByID(id:Int){
+        db.deleteGuideByID(id)
+        dataList=db.getGuideList()
         myAdapter.setNewData(dataList)
     }
 }

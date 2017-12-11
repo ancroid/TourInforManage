@@ -1,16 +1,22 @@
 package com.newth.tourinformanage.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
+import android.support.v4.content.ContextCompat
 import android.widget.FrameLayout
+import android.widget.Toast
 import com.ashokvarma.bottomnavigation.BottomNavigationBar
 import com.ashokvarma.bottomnavigation.BottomNavigationItem
 import com.newth.tourinformanage.R
 import com.newth.tourinformanage.fragment.ScenInfoFragment
+import com.newth.tourinformanage.fragment.TourGuideFragment
 import com.newth.tourinformanage.fragment.WayInfoFragment
 
 class MainActivity : AppCompatActivity() {
@@ -28,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         framelayout = findViewById(R.id.frame_main)
         navigationbar = findViewById(R.id.navigation_bar_main)
         floatbutton = findViewById(R.id.float_add)
-        initview()
+        getPermission()
     }
 
     private fun initview() {
@@ -42,6 +48,10 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, AddTourWayActivity::class.java)
                     startActivity(intent)
                 }
+                2 -> {
+                    val intent = Intent(this, AddTourGuideActivity::class.java)
+                    startActivity(intent)
+                }
             }
 
         }
@@ -51,9 +61,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initBottomBar() {
         navigationbar.activeColor = R.color.primary_color
-        navigationbar.addItem(BottomNavigationItem(R.mipmap.ic_launcher, "1"))
-                .addItem(BottomNavigationItem(R.mipmap.ic_launcher, "2"))
-                .addItem(BottomNavigationItem(R.mipmap.ic_launcher, "3"))
+        navigationbar.addItem(BottomNavigationItem(R.drawable.ic_scene, "景点"))
+                .addItem(BottomNavigationItem(R.drawable.ic_way, "线路"))
+                .addItem(BottomNavigationItem(R.drawable.ic_guide, "导游"))
                 .initialise()
         navigationbar.setTabSelectedListener(object : BottomNavigationBar.OnTabSelectedListener {
             override fun onTabSelected(position: Int) {
@@ -96,9 +106,30 @@ class MainActivity : AppCompatActivity() {
     private fun makeFragment(position: Int): Fragment = when (position) {
         0 -> ScenInfoFragment.newInstance()
         1 -> WayInfoFragment.newInstance()
+        2 -> TourGuideFragment.newInstance()
         else -> ScenInfoFragment.newInstance()
     }
 
     private fun makeTag(position: Int): String = ((R.id.frame_main) + position).toString()
 
+    private fun getPermission(){
+        when {
+            ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED -> ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE),1)
+            ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED -> ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),1)
+            else -> initview()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when(requestCode){
+            1->{
+                if (grantResults.isNotEmpty() && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    initview()
+                }else{
+                    Toast.makeText(this,"you denied permissions",Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            }
+        }
+    }
 }
