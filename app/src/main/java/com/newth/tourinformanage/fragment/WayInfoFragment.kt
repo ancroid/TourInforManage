@@ -9,10 +9,10 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.widget.Toast
+import com.miguelcatalan.materialsearchview.MaterialSearchView
 
 import com.newth.tourinformanage.R
 import com.newth.tourinformanage.activity.ShowWayActivity
@@ -28,19 +28,25 @@ class WayInfoFragment : Fragment() {
     private lateinit var toolbar: Toolbar
     private lateinit var reclerview: RecyclerView
     private lateinit var swipeRefesh: SwipeRefreshLayout
+    private lateinit var searchview: MaterialSearchView
+
     private var db: WayInfoDB = WayInfoDB.get()
     private var dataList = ArrayList<WayInfo>()
-    private lateinit var myAdapter:WayFragmentAdapter
+    private lateinit var myAdapter: WayFragmentAdapter
+
     companion object {
         fun newInstance(): WayInfoFragment {
             return WayInfoFragment()
         }
     }
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater!!.inflate(R.layout.fragment_way_info, container, false)
         toolbar = view.findViewById(R.id.tool_bar)
         reclerview = view.findViewById(R.id.recycler_wayinfo)
         swipeRefesh = view.findViewById(R.id.swipe_way_info)
+        searchview = view.findViewById(R.id.search_view)
+        searchview.visibility = View.VISIBLE
         return view
     }
 
@@ -61,6 +67,17 @@ class WayInfoFragment : Fragment() {
         swipeRefesh.setOnRefreshListener {
             queryWayInfo()
         }
+        searchview.setOnQueryTextListener(object : MaterialSearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                queryWayByName(query!!)
+                return false
+            }
+        })
+        setHasOptionsMenu(true)
     }
 
     private fun initRecycler() {
@@ -94,13 +111,32 @@ class WayInfoFragment : Fragment() {
             Toast.makeText(activity, "no info", Toast.LENGTH_SHORT).show()
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        activity.menuInflater.inflate(R.menu.menu_search, menu)
+        val item = menu!!.findItem(R.id.action_search)
+        searchview.setMenuItem(item)
+    }
+
+
     private fun queryWayInfo() {
         dataList = db.getonlyWayInfo()
         initRecycler()
     }
-    private fun deleteWay(id:Int){
-        db.deleteWayInfo(id,db.isHavePoint(id))
-        dataList=db.getonlyWayInfo()
+
+    private fun queryWayByName(name: String) {
+        val list = db.getWayInfoByName(name)
+        if (list.size > 0) {
+            dataList = list
+            setData()
+        } else {
+            Toast.makeText(activity, "无该线路信息", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun deleteWay(id: Int) {
+        db.deleteWayInfo(id, db.isHavePoint(id))
+        dataList = db.getonlyWayInfo()
         setData()
     }
 

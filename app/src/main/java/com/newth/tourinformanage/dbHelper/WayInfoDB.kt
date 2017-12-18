@@ -68,6 +68,23 @@ class WayInfoDB private constructor() {
         cursor.close()
         return list
     }
+    fun getWayInfoByName(name:String): ArrayList<WayInfo>{
+        val list = ArrayList<WayInfo>()
+        val cursor = db.query("WayInfo", null, "wayName=?", arrayOf(name), null, null, "id desc")
+        if (cursor!!.moveToFirst()) {
+            do {
+                val way = WayInfo()
+                way.id = cursor.getInt(cursor.getColumnIndex("id"))
+                way.wayName = cursor.getString(cursor.getColumnIndex("wayName"))
+                way.wayLocation = cursor.getString(cursor.getColumnIndex("wayLocation"))
+                way.wayKind = cursor.getString(cursor.getColumnIndex("wayKind"))
+                way.wayContent = cursor.getString(cursor.getColumnIndex("wayContent"))
+                list.add(way)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
 
     fun getWayAndPointByID(id: Int): ArrayList<WayInfo> {
         val list = ArrayList<WayInfo>()

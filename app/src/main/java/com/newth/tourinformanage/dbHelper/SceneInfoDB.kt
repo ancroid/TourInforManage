@@ -78,6 +78,24 @@ class SceneInfoDB private constructor() {
         cursor.close()
         return list
     }
+    fun getSceneInfoByName(name:String):ArrayList<SceneInfo>{
+        val list = ArrayList<SceneInfo>()
+        val cursor = db.query("SceneInfo", null, "sceneName=?", arrayOf(name), null, null, null)
+        if (cursor!!.moveToFirst()) {
+            do {
+                val scene = SceneInfo()
+                scene.id = cursor.getInt(cursor.getColumnIndex("id"))
+                scene.sceneName = cursor.getString(cursor.getColumnIndex("sceneName"))
+                scene.sceneLocation = cursor.getString(cursor.getColumnIndex("sceneLocation"))
+                scene.sceneKind = cursor.getString(cursor.getColumnIndex("sceneKind"))
+                scene.sceneContent = cursor.getString(cursor.getColumnIndex("sceneContent"))
+                scene.scenePicList = getPiclist(cursor.getString(cursor.getColumnIndex("scenePicList")))
+                list.add(scene)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
 
     fun deleteSceneByID(id: Int): Boolean {
         db.delete("SceneInfo", "id=?", arrayOf(id.toString()))

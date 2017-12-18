@@ -9,10 +9,10 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.widget.Toast
+import com.miguelcatalan.materialsearchview.MaterialSearchView
 import com.newth.tourinformanage.R
 import com.newth.tourinformanage.activity.ShowGuideActivity
 import com.newth.tourinformanage.adapter.TourGuideAdapter
@@ -28,6 +28,7 @@ class TourGuideFragment : Fragment() {
     private lateinit var toolbar: Toolbar
     private lateinit var reclerview: RecyclerView
     private lateinit var swipeRefesh: SwipeRefreshLayout
+    private lateinit var searchview: MaterialSearchView
 
     private var db: TourGuideDB = TourGuideDB.get()
     private var dataList = ArrayList<GuideInfo>()
@@ -42,6 +43,8 @@ class TourGuideFragment : Fragment() {
         toolbar = view.findViewById(R.id.tool_bar)
         reclerview = view.findViewById(R.id.recycler_guide_info)
         swipeRefesh = view.findViewById(R.id.swipe_guide_info)
+        searchview = view.findViewById(R.id.search_view)
+        searchview.visibility=View.VISIBLE
         return view
     }
 
@@ -63,6 +66,17 @@ class TourGuideFragment : Fragment() {
         swipeRefesh.setOnRefreshListener {
             queryGuideInfo()
         }
+        searchview.setOnQueryTextListener(object :MaterialSearchView.OnQueryTextListener{
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                queryGuideByName(query!!)
+                return false
+            }
+        })
+        setHasOptionsMenu(true)
     }
 
     private fun initRecycler() {
@@ -94,6 +108,21 @@ class TourGuideFragment : Fragment() {
             }
         } else {
             Toast.makeText(activity, "no info", Toast.LENGTH_SHORT).show()
+        }
+    }
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        activity.menuInflater.inflate(R.menu.menu_search, menu)
+        val item = menu!!.findItem(R.id.action_search)
+        searchview.setMenuItem(item)
+    }
+
+    private fun queryGuideByName(name:String){
+        val list=db.getGuideByName(name)
+        if (list.size>0){
+            dataList=list
+            myAdapter.setNewData(dataList)
+        }else{
+            Toast.makeText(activity,"无该导游信息",Toast.LENGTH_SHORT).show()
         }
     }
 

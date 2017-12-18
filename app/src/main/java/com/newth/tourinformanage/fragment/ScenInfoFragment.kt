@@ -9,10 +9,10 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.widget.Toast
+import com.miguelcatalan.materialsearchview.MaterialSearchView
 import com.newth.tourinformanage.R
 import com.newth.tourinformanage.activity.ShowSceneActivity
 import com.newth.tourinformanage.adapter.SceneInfoAdapter
@@ -28,6 +28,8 @@ class ScenInfoFragment : Fragment() {
     private lateinit var toolbar: Toolbar
     private lateinit var reclerview: RecyclerView
     private lateinit var swipeRefesh: SwipeRefreshLayout
+    private lateinit var searchview: MaterialSearchView
+
     private var db: SceneInfoDB = SceneInfoDB.get()
     private var dataList = ArrayList<SceneInfo>()
     private lateinit var myAdapter: SceneInfoAdapter
@@ -42,6 +44,8 @@ class ScenInfoFragment : Fragment() {
         toolbar = view.findViewById(R.id.tool_bar)
         reclerview = view.findViewById(R.id.recycler_sceneinfo)
         swipeRefesh = view.findViewById(R.id.swipe_scene_info)
+        searchview = view.findViewById(R.id.search_view)
+        searchview.visibility=View.VISIBLE
         return view
     }
 
@@ -50,6 +54,7 @@ class ScenInfoFragment : Fragment() {
         initview()
         querySceneInfo()
     }
+
 
     private fun initview() {
         val activity = activity as AppCompatActivity
@@ -60,8 +65,23 @@ class ScenInfoFragment : Fragment() {
             actionbar.setDisplayHomeAsUpEnabled(false)
         }
         swipeRefesh.setOnRefreshListener {
+            if (searchview.isSearchOpen){
+                searchview.closeSearch()
+            }
             querySceneInfo()
         }
+        searchview.setOnQueryTextListener(object :MaterialSearchView.OnQueryTextListener{
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                querySceneInfoByName(query!!)
+                Log.d("mmm",query)
+                return false
+            }
+        })
+        setHasOptionsMenu(true)
     }
 
     private fun initRecycler() {
@@ -96,9 +116,26 @@ class ScenInfoFragment : Fragment() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        activity.menuInflater.inflate(R.menu.menu_search, menu)
+        val item = menu!!.findItem(R.id.action_search)
+        searchview.setMenuItem(item)
+    }
+
+
+
     private fun querySceneInfo() {
         dataList = db.getSceneInfo()
         initRecycler()
+    }
+    private fun querySceneInfoByName(name:String){
+        val list=db.getSceneInfoByName(name)
+        if (list.size>0){
+            dataList=list
+            setData()
+        }else{
+            Toast.makeText(activity,"无该景点信息",Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun deleteSceneByID(id: Int) {

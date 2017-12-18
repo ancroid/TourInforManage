@@ -85,6 +85,27 @@ class TourGuideDB private constructor() {
         cursor.close()
         return list[0]
     }
+    fun getGuideByName(name:String):ArrayList<GuideInfo>{
+        val list = ArrayList<GuideInfo>()
+        val cursor = db.query("GuideInfo", null, "guideName=?", arrayOf(name), null, null, null)
+        if (cursor!!.moveToFirst()) {
+            do {
+                val guide = GuideInfo()
+                guide.id = cursor.getInt(cursor.getColumnIndex("id"))
+                guide.guideName = cursor.getString(cursor.getColumnIndex("guideName"))
+                guide.guideAge = cursor.getString(cursor.getColumnIndex("guideAge"))
+                guide.guideGender = cursor.getString(cursor.getColumnIndex("guideGender"))
+                guide.guidePort = cursor.getString(cursor.getColumnIndex("guidePort"))
+                guide.guideWorkTime = cursor.getString(cursor.getColumnIndex("guideWorkTime"))
+                guide.guideTargetTour = cursor.getString(cursor.getColumnIndex("guideTourTarget"))
+                guide.guidePhone = cursor.getString(cursor.getColumnIndex("guidePhone"))
+                guide.guideContent = cursor.getString(cursor.getColumnIndex("guideContent"))
+                list.add(guide)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
 
     fun deleteGuideByID(id: Int) {
         db.delete("GuideInfo", "id=?", arrayOf(id.toString()))
